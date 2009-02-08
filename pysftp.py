@@ -1,29 +1,31 @@
 """Friendly Python SFTP interface.
 
-pysftp is forked from ssh.py
-ssh.py authored by Zeth @ http://commandline.org.uk/python/sftp-python-really-simple-ssh/
+pysftp is forked with permission of ssh.py, originally authored by
+Zeth @ http://commandline.org.uk/python/sftp-python-really-simple-ssh/
 
 requires:
 paramiko - http://www.lag.net/paramiko/
   requires:
   pycrypto - http://www.dlitz.net/software/pycrypto/
 
-License: BSD  (see http://www.opensource.org/licenses/bsd-license.php)
+License: BSD  (see http://code.google.com/p/pysftp/source/browse/trunk/LICENSE.txt)
 """
 
 import os
 import tempfile
 import paramiko
 
+__version__ = "$Rev$"
 class Connection(object):
     """Connects and logs into the specified hostname. 
     Arguments that are not given are guessed from the environment.
-        host 	         - The Hostname of the remote machine.
-        username 	     - Your username at the remote machine.
-        private_key 	 - Your private key file.
-        password 	     - Your password at the remote machine.
-        port 	         - The SSH port of the remote machine.(default is 22)
-        private_key_pass - password to use if your private_key is encrypted
+        host             - The Hostname of the remote machine.
+        username 	     - Your username at the remote machine.(None)
+        private_key 	 - Your private key file.(None)
+        password         - Your password at the remote machine.(None)
+        port 	         - The SSH port of the remote machine.(22)
+        private_key_pass - password to use if your private_key is encrypted(None)
+        log              - log connection/handshake details (False)
     returns a connection to the requested machine
     
     srv = pysftp.Connection('example.com')

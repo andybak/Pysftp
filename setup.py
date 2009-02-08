@@ -1,3 +1,4 @@
+# $Id$
 from setuptools import setup, find_packages
 setup(
     name = "pysftp",
@@ -11,14 +12,14 @@ setup(
 
     package_data = {
         # If any package contains *.txt or *.rst files, include them:
-        '': ['*.txt', '*.rst'],
+        '': ['README','*.txt', '*.rst'],
     },
 
     # metadata for upload to PyPI
     author = "Jeff hinrichs",
     author_email = "jeffh@dundeemt.com",
     description = "A friendly face on SFTP",
-    license = "BSD",
+    license = "BSD - http://code.google.com/p/pysftp/source/browse/trunk/LICENSE.txt",
     keywords = "sftp ssh ftp internet",
     url = "http://code.google.com/p/pysftp/",   # project home page, if any
     long_description = """a simple interface to sftp.  based on zeth's ssh.py""",
