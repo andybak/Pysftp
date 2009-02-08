@@ -20,7 +20,7 @@ class Connection(object):
     """Connects and logs into the specified hostname. 
     Arguments that are not given are guessed from the environment.
         host             - The Hostname of the remote machine.
-        username 	     - Your username at the remote machine.(None)
+        username         - Your username at the remote machine.(None)
         private_key 	 - Your private key file.(None)
         password         - Your password at the remote machine.(None)
         port 	         - The SSH port of the remote machine.(22)
