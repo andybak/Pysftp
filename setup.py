@@ -24,6 +24,7 @@ setup(
     url = "http://code.google.com/p/pysftp/",   # project home page, if any
     long_description = """a simple interface to sftp.  based on zeth's ssh.py""",
     platforms=['any'],
+    download_url='http://code.google.com/p/pysftp/',
 
     # could also include long_description, download_url, classifiers, etc.
 )
