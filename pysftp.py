@@ -106,6 +106,21 @@ class Connection(object):
         else:
             return channel.makefile_stderr('rb', -1).readlines()
 
+    def chdir(self, path):
+        """change the current working directory on the remote"""
+        self._sftp_connect()
+        self._sftp.chdir(path)
+        
+    def getcwd(self):
+        """return the current working directory on the remote"""
+        self._sftp_connect()
+        return self._sftp.getcwd()
+        
+    def listdir(self, path='.'):
+        """return a list of files for the given path"""
+        self._sftp_connect()
+        return self._sftp.listdir(path)
+        
     def close(self):
         """Closes the connection and cleans up."""
         # Close SFTP Connection.
