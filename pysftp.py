@@ -95,6 +95,10 @@ class Connection(object):
             remotepath = os.path.split(localpath)[1]
         self._sftp_connect()
         self._sftp.put(localpath, remotepath)
+        
+    def mkdir(self, remotepath):
+        self._sftp_connect()
+        self._sftp.mkdir(remotepath)
 
     def execute(self, command):
         """Execute the given commands on a remote machine."""
