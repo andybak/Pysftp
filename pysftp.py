@@ -52,6 +52,7 @@ class Connection(object):
             paramiko.util.log_to_file(templog)
 
         # Begin the SSH transport.
+        self._tranport_live = False
         self._transport = paramiko.Transport((host, port))
         self._tranport_live = True
         # Authenticate the transport. prefer password if given
