@@ -21,9 +21,9 @@ class Connection(object):
     Arguments that are not given are guessed from the environment.
         host             - The Hostname of the remote machine.
         username         - Your username at the remote machine.(None)
-        private_key 	 - Your private key file.(None)
+        private_key      - Your private key file.(None)
         password         - Your password at the remote machine.(None)
-        port 	         - The SSH port of the remote machine.(22)
+        port             - The SSH port of the remote machine.(22)
         private_key_pass - password to use if your private_key is encrypted(None)
         log              - log connection/handshake details (False)
     returns a connection to the requested machine
@@ -52,7 +52,6 @@ class Connection(object):
             paramiko.util.log_to_file(templog)
 
         # Begin the SSH transport.
-        self._tranport_live = False
         self._transport = paramiko.Transport((host, port))
         self._tranport_live = True
         # Authenticate the transport. prefer password if given
@@ -97,9 +96,58 @@ class Connection(object):
         self._sftp_connect()
         self._sftp.put(localpath, remotepath)
         
+    def exists(self, path):
+        self._sftp_connect()
+        try:
+            self._sftp.stat(path)
+        except IOError, e:
+            if e[0] == 2:
+                return False
+            raise
+        else:
+            return True
+
+    def size_match(self, remotepath, localpath = None):
+        if not localpath:
+            localpath = os.path.split(remotepath)[1]
+        local_size = os.stat(localpath).st_size
+        self._sftp_connect()
+        try:
+            remote_size = self._sftp.stat(remotepath).st_size
+            if local_size == remote_size:
+                return True
+            else:
+                return False
+        except IOError, e:
+            if e[0] == 2: 
+                return False
+            raise
+        else:
+            raise
+        
     def mkdir(self, remotepath):
         self._sftp_connect()
         self._sftp.mkdir(remotepath)
+
+    def mkdir_all(self, remotepath):
+        self._sftp_connect()
+        if self.exists(remotepath):
+            return
+        else:
+            print remotepath + " doesn't exist. Creating."
+            try:
+                self.mkdir(remotepath)
+            except IOError:
+                self.mkdir_all(posixpath.split(remotepath)[0])
+        
+    def mkdir_put(self, localpath, remotepath = None):
+        # print "mkdir_put local=%s remote=%s" % (localpath, remotepath)
+        if not remotepath:
+            remotepath = posixpath.split(localpath)[1]
+        self._sftp_connect()
+        # print "mkdir_all: %s" % posixpath.split(remotepath)[0]
+        self.mkdir_all(posixpath.split(remotepath)[0])
+        self._sftp.put(localpath, remotepath)
 
     def execute(self, command):
         """Execute the given commands on a remote machine."""
