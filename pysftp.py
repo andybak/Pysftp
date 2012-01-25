@@ -58,6 +58,10 @@ class Connection(object):
         if password:
             # Using Password.
             self._transport.connect(username = username, password = password)
+            self._ssh = paramiko.SSHClient()
+            self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self._ssh.connect(host, username=username,
+                password=password, port=port) 
         else:
             # Use Private Key.
             if not private_key:
@@ -75,12 +79,36 @@ class Connection(object):
             except paramiko.SSHException:   #if it fails, try dss
                 xSx_key = paramiko.DSSKey.from_private_key_file(private_key_file,password=private_key_pass)
             self._transport.connect(username = username, pkey = xSx_key)
+            self._ssh.connect(host, username=username,
+                pkey=xSx_key, port=port) 
+
     
     def _sftp_connect(self):
         """Establish the SFTP connection."""
         if not self._sftp_live:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
             self._sftp_live = True
+    
+    @property
+    def client(self):
+        """Expose paramiko Channel object for advanced use."""
+        return self._ssh
+    
+    @property
+    def sftp_client(self):
+        """Expose paramiko SFTPClient object for advanced use."""
+        self._sftp_connect()
+        return self._sftp
+
+    @contextmanager
+    def cd(self, remote_dir):
+        """Context manager to provide with changed directory."""
+        old_dir = self.getcwd()
+        try:
+            self.chdir(remote_dir)
+            yield
+        finally:
+            self.chdir(old_dir)
 
     def get(self, remotepath, localpath = None):
         """Copies a file between the remote host and the local host."""
