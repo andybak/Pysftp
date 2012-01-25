@@ -88,6 +88,11 @@ class Connection(object):
             localpath = os.path.split(remotepath)[1]
         self._sftp_connect()
         self._sftp.get(remotepath, localpath)
+        
+    def open(self, remotepath, mode='r'):
+        """Copies a remote file."""
+        self._sftp_connect()
+        return self._sftp.open(remotepath, mode)
 
     def put(self, localpath, remotepath = None):
         """Copies a file between the local host and the remote host."""
@@ -134,15 +139,18 @@ class Connection(object):
         if self.exists(remotepath):
             return
         else:
+            print remotepath + " doesn't exist. Creating."
             try:
                 self.mkdir(remotepath)
             except IOError:
                 self.mkdir_all(posixpath.split(remotepath)[0])
         
     def mkdir_put(self, localpath, remotepath = None):
+        # print "mkdir_put local=%s remote=%s" % (localpath, remotepath)
         if not remotepath:
             remotepath = posixpath.split(localpath)[1]
         self._sftp_connect()
+        # print "mkdir_all: %s" % posixpath.split(remotepath)[0]
         self.mkdir_all(posixpath.split(remotepath)[0])
         self._sftp.put(localpath, remotepath)
 
