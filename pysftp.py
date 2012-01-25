@@ -64,6 +64,7 @@ class Connection(object):
             self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self._ssh.connect(host, username=username,
                 password=password, port=port) 
+            self._ssh_live = True
         else:
             # Use Private Key.
             if not private_key:
@@ -83,6 +84,7 @@ class Connection(object):
             self._transport.connect(username = username, pkey = xSx_key)
             self._ssh.connect(host, username=username,
                 pkey=xSx_key, port=port) 
+            self._ssh_live = True
 
     
     def _sftp_connect(self):
@@ -221,6 +223,9 @@ class Connection(object):
         if self._tranport_live:
             self._transport.close()
             self._tranport_live = False
+        if self._ssh_live:
+            self._ssh.close()
+            self._ssh_live = False
 
     def __del__(self):
         """Attempt to clean up if not explicitly closed."""
