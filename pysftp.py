@@ -15,6 +15,8 @@ import os
 import tempfile
 import paramiko
 
+from contextlib import contextmanager
+
 __version__ = "$Rev$"
 class Connection(object):
     """Connects and logs into the specified hostname. 
@@ -117,10 +119,15 @@ class Connection(object):
         self._sftp_connect()
         self._sftp.get(remotepath, localpath)
         
+    @contextmanager
     def open(self, remotepath, mode='r'):
         """Copies a remote file."""
         self._sftp_connect()
-        return self._sftp.open(remotepath, mode)
+        remote_file = self._sftp.open(remotepath, mode)
+        try:
+            yield remote_file
+        finally:
+            remote_file.close()
 
     def put(self, localpath, remotepath = None):
         """Copies a file between the local host and the remote host."""
