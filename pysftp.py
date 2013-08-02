@@ -55,15 +55,23 @@ class Connection(object):
 
         # Begin the SSH transport.
         self._transport = paramiko.Transport((host, port))
-        self._tranport_live = True
+        self._transport_live = True
+        self._ssh = paramiko.SSHClient()
+        self._ssh.load_system_host_keys()
+        self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         # Authenticate the transport. prefer password if given
         if password:
             # Using Password.
-            self._transport.connect(username = username, password = password)
-            self._ssh = paramiko.SSHClient()
-            self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            self._ssh.connect(host, username=username,
-                password=password, port=port) 
+            self._transport.connect(
+                username=username,
+                password=password
+            )
+            self._ssh.connect(
+                host,
+                username=username,
+                password=password,
+                port=port
+            ) 
         else:
             # Use Private Key.
             if not private_key:
