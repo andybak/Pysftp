@@ -226,9 +226,9 @@ class Connection(object):
             self._sftp.close()
             self._sftp_live = False
         # Close the SSH Transport.
-        if self._tranport_live:
+        if self._transport_live:
             self._transport.close()
-            self._tranport_live = False
+            self._transport_live = False
 
     def __del__(self):
         """Attempt to clean up if not explicitly closed."""
