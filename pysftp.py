@@ -143,6 +143,11 @@ class Connection(object):
             remotepath = os.path.split(localpath)[1]
         self._sftp_connect()
         self._sftp.put(localpath, remotepath)
+
+    def rename(self, oldpath, newpath):
+        """Rename a file in the remote host."""
+        self._sftp_connect()
+        self._sftp.rename(oldpath, newpath)
         
     def exists(self, path):
         self._sftp_connect()
