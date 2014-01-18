@@ -144,6 +144,11 @@ class Connection(object):
         self._sftp_connect()
         self._sftp.put(localpath, remotepath)
 
+    def putfo(self, fl, remotepath, file_size=0):
+        """Copy the contents of an open file object (fl) to the SFTP server as remotepath."""
+        self._sftp_connect()
+        self._sftp.putfo(fl, remotepath, file_size)
+
     def remove(self, remotepath):
         """Remove a file in the remote host."""
         self._sftp_connect()
