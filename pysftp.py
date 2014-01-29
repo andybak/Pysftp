@@ -120,12 +120,12 @@ class Connection(object):
         finally:
             self.chdir(old_dir)
 
-    def get(self, remotepath, localpath = None):
+    def get(self, remotepath, localpath = None, callback=None):
         """Copies a file between the remote host and the local host."""
         if not localpath:
             localpath = os.path.split(remotepath)[1]
         self._sftp_connect()
-        self._sftp.get(remotepath, localpath)
+        self._sftp.get(remotepath, localpath, callback)
         
     @contextmanager
     def open(self, remotepath, mode='r'):
@@ -137,17 +137,17 @@ class Connection(object):
         finally:
             remote_file.close()
 
-    def put(self, localpath, remotepath = None):
+    def put(self, localpath, remotepath = None, callback=None):
         """Copies a file between the local host and the remote host."""
         if not remotepath:
             remotepath = os.path.split(localpath)[1]
         self._sftp_connect()
-        self._sftp.put(localpath, remotepath)
+        self._sftp.put(localpath, remotepath, callback)
 
-    def putfo(self, fl, remotepath, file_size=0):
+    def putfo(self, fl, remotepath, file_size=0, callback=None):
         """Copy the contents of an open file object (fl) to the SFTP server as remotepath."""
         self._sftp_connect()
-        self._sftp.putfo(fl, remotepath, file_size)
+        self._sftp.putfo(fl, remotepath, file_size, callback)
 
     def remove(self, remotepath):
         """Remove a file in the remote host."""
