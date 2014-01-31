@@ -233,6 +233,16 @@ class Connection(object):
         """return a list of files for the given path"""
         self._sftp_connect()
         return self._sftp.listdir(path)
+
+    def stat(self, remotepath):
+        """Retrieve the stats of a file."""
+        self._sftp_connect()
+        return self._sftp.stat(remotepath)   
+    
+    def lstat(self, remotepath):
+        """Retrieve the stats of a file without following symbolic links (shortcut)"""
+        self._sftp_connect()
+        return self._sftp.lstat(remotepath)
         
     def close(self):
         """Closes the connection and cleans up."""
@@ -248,6 +258,7 @@ class Connection(object):
     def __del__(self):
         """Attempt to clean up if not explicitly closed."""
         self.close()
+   
 
 def main():
     """Little test when called directly."""
