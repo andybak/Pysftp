@@ -54,6 +54,7 @@ class Connection(object):
             paramiko.util.log_to_file(templog)
 
         # Begin the SSH transport.
+        self._transport_live = False
         self._transport = paramiko.Transport((host, port))
         self._transport_live = True
         self._ssh = paramiko.SSHClient()
@@ -154,6 +155,11 @@ class Connection(object):
         self._sftp_connect()
         self._sftp.remove(remotepath)
 
+    def rmdir(self, remotepath):
+        """Remove a directory in the remote host."""
+        self._sftp_connect()
+        self._sftp.rmdir(remotepath)
+        
     def rename(self, oldpath, newpath):
         """Rename a file in the remote host."""
         self._sftp_connect()
