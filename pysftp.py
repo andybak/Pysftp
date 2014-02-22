@@ -54,6 +54,7 @@ class Connection(object):
             paramiko.util.log_to_file(templog)
 
         # Begin the SSH transport.
+        self._transport_live = False
         self._transport = paramiko.Transport((host, port))
         self._transport_live = True
         self._ssh = paramiko.SSHClient()
@@ -120,12 +121,12 @@ class Connection(object):
         finally:
             self.chdir(old_dir)
 
-    def get(self, remotepath, localpath = None):
+    def get(self, remotepath, localpath = None, callback=None):
         """Copies a file between the remote host and the local host."""
         if not localpath:
             localpath = os.path.split(remotepath)[1]
         self._sftp_connect()
-        self._sftp.get(remotepath, localpath)
+        self._sftp.get(remotepath, localpath, callback)
         
     @contextmanager
     def open(self, remotepath, mode='r'):
@@ -137,23 +138,28 @@ class Connection(object):
         finally:
             remote_file.close()
 
-    def put(self, localpath, remotepath = None):
+    def put(self, localpath, remotepath = None, callback=None):
         """Copies a file between the local host and the remote host."""
         if not remotepath:
             remotepath = os.path.split(localpath)[1]
         self._sftp_connect()
-        self._sftp.put(localpath, remotepath)
+        self._sftp.put(localpath, remotepath, callback)
 
-    def putfo(self, fl, remotepath, file_size=0):
+    def putfo(self, fl, remotepath, file_size=0, callback=None):
         """Copy the contents of an open file object (fl) to the SFTP server as remotepath."""
         self._sftp_connect()
-        self._sftp.putfo(fl, remotepath, file_size)
+        self._sftp.putfo(fl, remotepath, file_size, callback)
 
     def remove(self, remotepath):
         """Remove a file in the remote host."""
         self._sftp_connect()
         self._sftp.remove(remotepath)
 
+    def rmdir(self, remotepath):
+        """Remove a directory in the remote host."""
+        self._sftp_connect()
+        self._sftp.rmdir(remotepath)
+        
     def rename(self, oldpath, newpath):
         """Rename a file in the remote host."""
         self._sftp_connect()
@@ -233,6 +239,16 @@ class Connection(object):
         """return a list of files for the given path"""
         self._sftp_connect()
         return self._sftp.listdir(path)
+
+    def stat(self, remotepath):
+        """Retrieve the stats of a file."""
+        self._sftp_connect()
+        return self._sftp.stat(remotepath)   
+    
+    def lstat(self, remotepath):
+        """Retrieve the stats of a file without following symbolic links (shortcut)"""
+        self._sftp_connect()
+        return self._sftp.lstat(remotepath)
         
     def close(self):
         """Closes the connection and cleans up."""
@@ -248,6 +264,7 @@ class Connection(object):
     def __del__(self):
         """Attempt to clean up if not explicitly closed."""
         self.close()
+   
 
 def main():
     """Little test when called directly."""
